@@ -1,3 +1,4 @@
+import os
 import sys      # opening files, and exiting program
 import requests     # sending api requests
 import matplotlib.pyplot as plt     # for plotting bar graphs
@@ -316,6 +317,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
