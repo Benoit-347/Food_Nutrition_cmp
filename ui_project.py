@@ -265,7 +265,8 @@ def main():
                     result = i
                     max_old = max
             else:
-                first_data = foods[result]
+                first_food = foods[result]
+                first_data = get_nutrients_food(first_food, selected_nutrients)
         print(f"Obtained first food at {i+1}th filter check")
         streamlit.success(f"Found- {first_food['description']}")
         #obtain relevant nutrients of first food
@@ -284,7 +285,8 @@ def main():
                     result = i
                     max_old = max
             else:
-                second_data = foods[result]
+                second_food = foods[result]
+                second_data = get_nutrients_food(second_food, selected_nutrients)
         print(f"Obtained second food at {i+1}th filter check")
         streamlit.success(f"Found: {second_food['description']}")
     
@@ -320,6 +322,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
