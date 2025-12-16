@@ -263,7 +263,7 @@ def main():
             else:
                 first_data = first_food[result]
         print(f"Obtained first food at {i+1}th filter check")
-        streamlit.success(f"Found- {first_food["description"]}")
+        streamlit.success(f"Found- {first_food['description']}")
         #obtain relevant nutrients of first food
 
         with streamlit.spinner(f"Searching for food: {input_box_2}..."):
@@ -282,7 +282,7 @@ def main():
             else:
                 second_data = second_food[result]
         print(f"Obtained second food at {i+1}th filter check")
-        streamlit.success(f"Found: {second_food["description"]}")
+        streamlit.success(f"Found: {second_food['description']}")
     
         # PLOT a bar graph of the 2 foods
 
@@ -316,5 +316,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
