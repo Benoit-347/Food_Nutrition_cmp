@@ -253,11 +253,11 @@ def main():
             streamlit.stop()
         with streamlit.spinner(f"\nSearching for food: {input_box_1}..."):
             foods = request_food(SEARCH_URL, streamlit.session_state.api_key, input_box_1, MAX_PER_REQUEST, dict_memoization)
+            max_old = 0
+            result = 0
             for i in range(len(foods)):
                 first_food = foods[i]
                 first_data = get_nutrients_food(first_food, selected_nutrients)
-                max_old = 0
-                result = 0
                 match, max = chk_nutrient_filter(first_data, streamlit.session_state.dict_filter_values, max_old)
                 if (match):
                     break
@@ -273,11 +273,11 @@ def main():
 
         with streamlit.spinner(f"Searching for food: {input_box_2}..."):
             foods = request_food(SEARCH_URL, streamlit.session_state.api_key, input_box_2, MAX_PER_REQUEST, dict_memoization)  
+            max_old = 0
+            result = 0
             for i in range(len(foods)):
                 second_food = foods[i]
                 second_data = get_nutrients_food(second_food, selected_nutrients)
-                max_old = 0
-                result = 0
                 match, max = chk_nutrient_filter(second_data, streamlit.session_state.dict_filter_values, max_old)
                 if (match):
                     break
@@ -322,6 +322,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
