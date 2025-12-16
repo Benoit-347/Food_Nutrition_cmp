@@ -1,6 +1,5 @@
 import sys      # opening files, and exiting program
 import requests     # sending api requests
-from dotenv import load_dotenv  # load .env file
 import matplotlib.pyplot as plt     # for plotting bar graphs
 import numpy as np
 import json # loading json file, which we create ourselves to store previously searched food names
@@ -317,4 +316,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
