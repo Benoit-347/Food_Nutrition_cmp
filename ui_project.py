@@ -1,4 +1,4 @@
-import os, sys      # opening files, and exiting program
+import sys      # opening files, and exiting program
 import requests     # sending api requests
 from dotenv import load_dotenv  # load .env file
 import matplotlib.pyplot as plt     # for plotting bar graphs
@@ -189,11 +189,12 @@ def main():
         streamlit.session_state.loaded = 1
         streamlit.session_state.dict_mem = dict_memoization    
         # loading api key
-        load_dotenv()
-        API_KEY = os.getenv("USDA_API_KEY")
-        if not API_KEY:
-            sys.exit("API KEY empty")
-        streamlit.session_state.api_key = API_KEY
+        try:
+            API_KEY = streamlit.secrets["USDA_API_KEY"]
+            streamlit.session_state.api_key = API_KEY
+        except:
+            streamlit.error("API Key not found!")
+            streamlit.stop()
 
     dict_memoization = streamlit.session_state.dict_mem
 
@@ -316,3 +317,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
