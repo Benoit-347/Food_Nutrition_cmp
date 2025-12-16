@@ -248,6 +248,9 @@ def main():
         button_1 = streamlit.form_submit_button("Submit")
 
     if button_1:
+        if (not input_box_1 ) or (not input_box_2):
+            streamlit.write("Enter food names!")
+            streamlit.stop()
         with streamlit.spinner(f"\nSearching for food: {input_box_1}..."):
             foods = request_food(SEARCH_URL, streamlit.session_state.api_key, input_box_1, MAX_PER_REQUEST, dict_memoization)
             for i in range(len(foods)):
@@ -317,6 +320,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
