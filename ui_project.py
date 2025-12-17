@@ -1,5 +1,4 @@
-import os
-import sys      # opening files, and exiting program
+import os      # opening files, and exiting program
 import requests     # sending api requests
 import matplotlib.pyplot as plt     # for plotting bar graphs
 import numpy as np
@@ -70,8 +69,7 @@ def request_food(SEARCH_URL, API_KEY, food_query, page_limit, dict_memoization):
     result = search_result.json().get("foods", [])     # convert result obj into json dict, use dict get method to obtain value in "foods" key (default []).
     
     if bool(result) == False:
-        print(f"Empty search for name {food_query}")
-        sys.exit(1)
+        return None
     
     # add to memoized data
     dict_memoization[food_query] = result
@@ -86,11 +84,12 @@ def get_nutrient(food, name):
             return nutrient["value"]
 
 def get_nutrients_food(food, selected_nutrients):
-    if not food:
-        print("No match to food query")
     result = []
     for i in selected_nutrients:
-        result.append(get_nutrient(food, i))     #  # ideal workflow- "foods = [ dict_food, dict_food_2..]; dict_food = {"foodNutrients": [ {"nutrientName": <name_1>, "value": <val_1>}, {"nutrientName": <name_2>, "value": <val_2>} ] }
+        value = get_nutrient(food, i)
+        if value == None:
+            value = 0
+        result.append(value)     #  # ideal workflow- "foods = [ dict_food, dict_food_2..]; dict_food = {"foodNutrients": [ {"nutrientName": <name_1>, "value": <val_1>}, {"nutrientName": <name_2>, "value": <val_2>} ] }
     return result
 
 def graph_food(first_food_obj, second_food_obj, first_food_data, second_food_data, nutrients):
@@ -165,16 +164,21 @@ def save_json(memoization_file_name, dict_memoization):
     print("Saved file, holding results")
 
 def chk_nutrient_filter(chk_data, dict_filter_data, maximum):
-    i = 0
-    new_max = 0
-    matched = True
-    for key in dict_filter_data:
-        if dict_filter_data[key] <= chk_data[i]:
-            new_max += 1
-        else:
-            matched = False
-        i += 1
-    return matched, max(new_max, maximum)
+    try:
+        i = 0
+        new_max = 0
+        matched = True
+        for key in dict_filter_data:
+            if dict_filter_data[key] <= chk_data[i]:
+                new_max += 1
+            else:
+                matched = False
+            i += 1
+        return matched, max(new_max, maximum)
+    except:
+        print(f"ERROR FACED AT LINE 165; values: {chk_data, dict_filter_data}")
+        streamlit.write(f"ERROR FACED AT LINE 165; values: {chk_data, dict_filter_data}")
+        streamlit.rerun()
 
 def main():
 
@@ -187,7 +191,7 @@ def main():
     if 'loaded' not in streamlit.session_state:
         dict_memoization = load_stored_json(memoization_file_name)
         streamlit.session_state.loaded = 1
-        streamlit.session_state.dict_mem = dict_memoization    
+        streamlit.session_state.dict_mem = dict_memoization
         # loading api key
         try:
             API_KEY = streamlit.secrets["USDA_API_KEY"]
@@ -210,13 +214,13 @@ def main():
         
         input_box_1, input_box_2 = streamlit.columns(2)
         # 1st food item
-        input_box_1 = streamlit.text_input("\nEnter first food to compare: ").lower()
+        input_box_1 = input_box_1.text_input("Enter first food to compare: ").lower()
         # 2nd food item
-        input_box_2 = streamlit.text_input("Enter second food to compare: ").lower()
+        input_box_2 = input_box_2.text_input("Enter second food to compare: ").lower()
 
     # Multiselect nutrient
             #  Sends a list, which a user can see IN UI- scrollable, and select them, appearing like tabs on selected space
-        streamlit.title("Nutrients to display")
+        streamlit.subheader("Select the Nutrients to display")
         list_nutrients = ['Protein', 'Total lipid (fat)', 'Carbohydrate, by difference', 'Energy', 'Alcohol, ethyl', 'Water', 'Caffeine', 'Theobromine', 'Total Sugars', 'Fiber, total dietary',
                           'Calcium, Ca', 'Iron, Fe', 'Magnesium, Mg', 'Phosphorus, P', 'Potassium, K', 'Sodium, Na', 'Zinc, Zn', 'Copper, Cu', 'Selenium, Se', 'Retinol', 'Vitamin A, RAE',
                           'Carotene, beta', 'Carotene, alpha', 'Vitamin E (alpha-tocopherol)', 'Vitamin D (D2 + D3)', 'Cryptoxanthin, beta', 'Lycopene', 'Lutein + zeaxanthin',
@@ -225,8 +229,9 @@ def main():
                           'SFA 4:0', 'SFA 6:0', 'SFA 8:0', 'SFA 10:0', 'SFA 12:0', 'SFA 14:0', 'SFA 16:0', 'SFA 18:0', 'MUFA 18:1', 'PUFA 18:2', 'PUFA 18:3', 'PUFA 20:4', 'PUFA 22:6 n-3 (DHA)',
                           'MUFA 16:1', 'PUFA 18:4', 'MUFA 20:1', 'PUFA 20:5 n-3 (EPA)', 'MUFA 22:1', 'PUFA 22:5 n-3 (DPA)', 'Fatty acids, total monounsaturated', 'Fatty acids, total polyunsaturated']
         
-        selected_nutrients = streamlit.multiselect("Select Nutrients to compare: ", options = list_nutrients, default= ['Energy', 'Protein', 'Total lipid (fat)', 'Fiber, total dietary'])
+        selected_nutrients = streamlit.multiselect("", options = list_nutrients, default= ['Energy', 'Protein', 'Total lipid (fat)', 'Fiber, total dietary'])
 
+        streamlit.subheader("Move slider to apply minimum nutrition value in search")
         if 'dict_filter_values' not in streamlit.session_state:
             streamlit.session_state.dict_filter_values = {}
         for i in selected_nutrients:
@@ -247,12 +252,26 @@ def main():
     # BUTTON, which also sends api request
         button_1 = streamlit.form_submit_button("Submit")
 
+    if 'past_search' not in streamlit.session_state:
+        streamlit.session_state.past_search = True
+
+    if not streamlit.session_state.past_search:
+        print(f"Did not find any results for food: {streamlit.session_state.food_name}")
+        print(f"Please Change food name and try again\n")
+        streamlit.write(f"Did not find any results for food: {streamlit.session_state.food_name}")
+        streamlit.write(f"Please change Food Name and Try again")
     if button_1:
         if (not input_box_1 ) or (not input_box_2):
             streamlit.write("Enter food names!")
             streamlit.stop()
         with streamlit.spinner(f"\nSearching for food: {input_box_1}..."):
             foods = request_food(SEARCH_URL, streamlit.session_state.api_key, input_box_1, MAX_PER_REQUEST, dict_memoization)
+            if foods == None:
+                streamlit.session_state.past_search = None
+                streamlit.session_state.food_name = input_box_1
+                streamlit.rerun()
+            else:
+                streamlit.session_state.past_search = True
             max_old = 0
             result = 0
             for i in range(len(foods)):
@@ -260,6 +279,7 @@ def main():
                 first_data = get_nutrients_food(first_food, selected_nutrients)
                 match, max = chk_nutrient_filter(first_data, streamlit.session_state.dict_filter_values, max_old)
                 if (match):
+                    result = i
                     break
                 elif (max_old < max):
                     result = i
@@ -267,12 +287,16 @@ def main():
             else:
                 first_food = foods[result]
                 first_data = get_nutrients_food(first_food, selected_nutrients)
-        print(f"Obtained first food at {i+1}th filter check")
-        streamlit.success(f"Found- {first_food['description']}")
+        print(f"Obtained first food at {result+1}th filter check")
+        streamlit.success(f"Found- {first_food["description"]}")
         #obtain relevant nutrients of first food
 
         with streamlit.spinner(f"Searching for food: {input_box_2}..."):
             foods = request_food(SEARCH_URL, streamlit.session_state.api_key, input_box_2, MAX_PER_REQUEST, dict_memoization)  
+            if foods == None:
+                streamlit.session_state.past_search = None
+                streamlit.session_state.food_name = input_box_2
+                streamlit.rerun()
             max_old = 0
             result = 0
             for i in range(len(foods)):
@@ -280,15 +304,15 @@ def main():
                 second_data = get_nutrients_food(second_food, selected_nutrients)
                 match, max = chk_nutrient_filter(second_data, streamlit.session_state.dict_filter_values, max_old)
                 if (match):
+                    result = i
                     break
                 elif (max_old < max):
                     result = i
                     max_old = max
             else:
                 second_food = foods[result]
-                second_data = get_nutrients_food(second_food, selected_nutrients)
-        print(f"Obtained second food at {i+1}th filter check")
-        streamlit.success(f"Found: {second_food['description']}")
+        print(f"Obtained second food at {result+1}th filter check\n")
+        streamlit.success(f"Found: {second_food["description"]}")
     
         # PLOT a bar graph of the 2 foods
 
@@ -316,17 +340,16 @@ def main():
     # Below code makes fn 'save_json' run only when terminating
     # every time atexit.register(fn_name) is called, sends the fn to a queue, which runs at program termination
         # Below makes it call atexit.register only once
+
+    if streamlit.button("Save"):
+        with streamlit.spinner(f"\nSaving results to  cache json file: {memoization_file_name}..."):
+            save_json(memoization_file_name, dict_memoization)
+        streamlit.write(f"Saved the seatch results to cache json file: {memoization_file_name}")
+
+
     if "terminated" not in streamlit.session_state:
         atexit.register(save_json, memoization_file_name, dict_memoization)
         streamlit.session_state.terminated = True
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
