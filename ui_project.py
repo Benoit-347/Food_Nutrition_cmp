@@ -239,7 +239,6 @@ def main():
 
 
         choice = streamlit.radio("Show bad nutrient graph?", ["No", "Yes"], horizontal=True)
-        streamlit.form_submit_button("Apply")
 
         if choice == "Yes":
             streamlit.session_state.show_bad = True
@@ -249,6 +248,8 @@ def main():
         else:
             streamlit.session_state.show_bad = False
 
+        streamlit.form_submit_button("Apply")
+        
     # BUTTON, which also sends api request
         button_1 = streamlit.form_submit_button("Submit")
 
@@ -353,3 +354,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
