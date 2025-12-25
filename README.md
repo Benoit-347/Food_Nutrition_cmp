@@ -2,7 +2,7 @@
 
 > **Searches up a specified food name to display a graph on its nutritional info.**
 
-![License](https://img.shields.io/badge/license-MIT-green) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Language](https://img.shields.io/badge/language-Python-yellow) ![Framework](https://img.shields.io/badge/framework-Streamlit-orange) ![GitHub](https://img.shields.io/badge/GitHub-Benoit-347/Food_Nutrition_cmp/-black?logo=github) ![Build Status](https://img.shields.io/github/actions/workflow/status/Benoit-347/Food_Nutrition_cmp//ci.yml?branch=main)
+![License](https://img.shields.io/badge/license-MIT-green) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Language](https://img.shields.io/badge/language-Python-yellow) ![Framework](https://img.shields.io/badge/framework-Streamlit-orange) ![GitHub](https://img.shields.io/badge/GitHub-Benoit--347%2FFood__Nutrition__cmp-black?logo=github) ![Build Status](https://img.shields.io/github/actions/workflow/status/Benoit-347/Food_Nutrition_cmp/ci.yml?branch=main)
 
 ## ℹ️ Project Information
 
