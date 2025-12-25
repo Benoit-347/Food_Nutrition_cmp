@@ -29,7 +29,7 @@ The application fetches data from the **USDA API** (a reputed food information s
 * **Smart Caching System:** Automatically manages a local JSON file to store search results.
     * *Benefit:* Reduces search times from **~2s to ~0.2s**.
     * *Benefit:* Conserves API calls (staying well within the 1000 calls/hr free limit).
-* **Session Management:** Includes a manual **"Save"** button to commit session search history to the local cache.
+    * **Session Management:** Includes a manual **"Save"** button to store all session search results to the local json file. Which reduces frequent write when implementing caching system. (This is the very timplementation of the caching system; and is a Upgrade to the alternative of writing to file every time user runs the food search.)
 * **Smart Search:** Users can filter foods by a minimum nutrient value. If no exact match is found, the program intelligently provides the closest match.
 
 ---
@@ -48,9 +48,9 @@ Raw numbers are difficult to compare quickly.
 * **Handling Missing Data:** Some API responses yield `None` types for specific nutrients. The system automatically sanitizes these to `0` (int) to ensure the graph plots successfully without crashing.
 
 ### 3. Optimization (Memoization & JSON)
-One of the main challenges was the latency caused by network requests to the USDA API.
+One of the main challenges was the API Response Time caused by requests to the USDA API for each Food Search.
 * **Decision:** Implemented **Memoization**. The program checks a local dictionary loaded from a JSON file before making an API call.
-* **I/O Strategy:** To avoid the performance cost of writing to the disk after *every* single search, the app uses a **Batch Save** approach. New searches are held in memory during the session and are only written to the `json` file when the user clicks the **Save** button.
+* **I/O Strategy:** To avoid the performance cost of writing to the disk after *every* single search, the app uses a **Batch Save** approach. New searches are held in memory during the session and only when the user clicks the **Save** button, the searches are written to the `json` file .
 
 ---
 
