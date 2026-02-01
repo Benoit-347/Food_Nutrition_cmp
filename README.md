@@ -30,7 +30,7 @@ The application fetches data from the **USDA API** (a reputed food information s
     * *Benefit:* Reduces search times from **~2s to ~0.2s**.
     * *Benefit:* Conserves API calls (staying well within the 1000 calls/hr free limit).
     * **Session Management:** Includes a manual **"Save"** button to store all session search results to the local json file. Which reduces frequent write when implementing caching system. (This is the very timplementation of the caching system; and is a Upgrade to the alternative of writing to file every time user runs the food search.)
-* **Smart Search:** Users can filter foods by a minimum nutrient value. If no exact match is found, the program intelligently provides the closest match.
+* **Smart Search:** (BEING FIXED) Users can filter foods by a minimum nutrient value. If no exact match is found, the program intelligently provides the closest match.
 
 ---
 
