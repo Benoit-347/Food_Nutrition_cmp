@@ -1,10 +1,10 @@
-import os      # opening files, and exiting program
-import requests     # sending api requests
-import matplotlib.pyplot as plt     # for plotting bar graphs
-import numpy as np
-import json # loading json file, which we create ourselves to store previously searched food names
+from os import path      # opening files, and exiting program
+from requests import get     # sending api requests
+from matplotlib.pyplot import subplots     # for plotting bar graphs
+from numpy import arange
+from json import load, dump # loading json file, which we create ourselves to store previously searched food names
 import streamlit
-import atexit   # to do fns when a user exits program
+from atexit import register   # to do fns when a user exits program
 
 MAX_PER_REQUEST = 25
 
@@ -16,7 +16,7 @@ def request_food(SEARCH_URL, API_KEY, food_query, page_limit, dict_memoization):
         return dict_memoization[food_query]
     
     # get (url, parameters);     parameters  = "api_key", "query" (food name), "pageSize" (max results count)
-    search_result = requests.get(SEARCH_URL, params= {"api_key": API_KEY, "query": food_query, "pageSize": page_limit}, timeout=10)
+    search_result = get(SEARCH_URL, params= {"api_key": API_KEY, "query": food_query, "pageSize": page_limit}, timeout=10)
     search_result.raise_for_status()        # raise exception if failed web request.
 
     result = search_result.json().get("foods", [])     # convert result obj into json dict, use dict get method to obtain value in "foods" key (default []).
@@ -52,10 +52,10 @@ def graph_food(first_food_obj, second_food_obj, first_food_data, second_food_dat
     label_2 = second_food_obj['description']
 
     # 2. SETUP PLOT
-    x = np.arange(len(nutrients))  # Label locations
+    x = arange(len(nutrients))  # Label locations
     width = 0.35  # Width of the bars
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = subplots(figsize=(10, 8))
 
     # 3. PLOT BARS
     # We shift the position of the bars by +/- width/2 so they sit side-by-side
@@ -104,16 +104,16 @@ def graph_food(first_food_obj, second_food_obj, first_food_data, second_food_dat
 def load_stored_json(memoization_file_name):
     # feature 1
         # storing previously searched food data.
-    if not os.path.exists(memoization_file_name):
+    if not path.exists(memoization_file_name):
         dict_memoization = {}
     else:
         with open(memoization_file_name, 'r') as file_obj:
-            dict_memoization = json.load(file_obj)
+            dict_memoization = load(file_obj)
     return dict_memoization
 
 def save_json(memoization_file_name, dict_memoization):
     with open(memoization_file_name, 'w') as file_obj:
-        json.dump(dict_memoization, file_obj)
+        dump(dict_memoization, file_obj)
     print("Saved file, holding results")
 
 
@@ -251,7 +251,7 @@ def main():
 
 
     if "terminated" not in streamlit.session_state:
-        atexit.register(save_json, memoization_file_name, dict_memoization)
+        register(save_json, memoization_file_name, dict_memoization)
         streamlit.session_state.terminated = True
 
 if __name__ == "__main__":
